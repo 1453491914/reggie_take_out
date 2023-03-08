@@ -134,7 +134,7 @@ public class DishController {
         dishService.updateDishWithFlavor(dishDto);
 
         String key = "dish_" + dishDto.getCategoryId() + "_1";
-        redisTemplate.delete(key);
+        redisTemplate.delete(key);  
 
 
         return Result.success("修改菜品成功");
