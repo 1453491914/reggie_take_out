@@ -135,4 +135,38 @@ public class SetMealController {
 
         return Result.success(setMealList);
     }
+
+    /**
+     * 停售套餐
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/0")
+    public Result<String> stopSetMeal(Long ids) {
+        log.info("ids : {}", ids);
+        SetMeal setMealById = setMealService.getById(ids);
+
+        setMealById.setStatus(0);
+
+        setMealService.updateById(setMealById);
+
+        return Result.success("修改成功！");
+    }
+
+    /**
+     * 启售套餐
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/1")
+    public Result<String> startSetMealStatus(Long ids) {
+        log.info("ids : {}", ids);
+        SetMeal setMealById = setMealService.getById(ids);
+
+        setMealById.setStatus(1);
+
+        setMealService.updateById(setMealById);
+
+        return Result.success("修改成功！");
+    }
 }
