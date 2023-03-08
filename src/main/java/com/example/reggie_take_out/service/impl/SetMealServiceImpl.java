@@ -10,6 +10,7 @@ import com.example.reggie_take_out.mapper.SetMealMapper;
 import com.example.reggie_take_out.service.SetMealDishService;
 import com.example.reggie_take_out.service.SetMealService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,5 +83,56 @@ public class SetMealServiceImpl extends ServiceImpl<SetMealMapper, SetMeal> impl
 
         setMealDishService.remove(setMealDishLambdaQueryWrapper);
 
+    }
+
+    /**
+     * 根据id查询套餐及套餐和菜品的关联关系
+     * @param id
+     * @return
+     */
+    @Override
+    public SetMealDto getSetMealDishById(Long id) {
+        //查询套餐
+        SetMeal setMeal = this.getById(id);
+
+        SetMealDto setMealDto = new SetMealDto();
+
+        BeanUtils.copyProperties(setMeal, setMealDto);
+
+        //查询套餐中的菜品信息
+        LambdaQueryWrapper<SetMealDish> setMealDishLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        setMealDishLambdaQueryWrapper.eq(SetMealDish::getSetmealId, id);
+
+        List<SetMealDish> setMealDishList = setMealDishService.list(setMealDishLambdaQueryWrapper);
+
+        setMealDto.setSetmealDishes(setMealDishList);
+
+        return setMealDto;
+    }
+
+    /**
+     * 更新套餐及套餐和菜品的关联信息
+     * @param setMealDto
+     */
+    @Override
+    @Transactional
+    public void updateSetMealDish(SetMealDto setMealDto) {
+        //更新套餐信息
+        this.updateById(setMealDto);
+
+        //删除套餐中原有菜品
+        LambdaQueryWrapper<SetMealDish> setMealDishLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        setMealDishLambdaQueryWrapper.eq(SetMealDish::getSetmealId, setMealDto.getId());
+        setMealDishService.remove(setMealDishLambdaQueryWrapper);
+
+        //重新添加套餐新菜品
+        List<SetMealDish> setMealDishes = setMealDto.getSetmealDishes();
+        setMealDishes = setMealDishes.stream().map((item) -> {
+            item.setSetmealId(setMealDto.getId());
+            return item;
+        }).collect(Collectors.toList());
+
+        //保存菜品和套餐的关联信息，操作set_meal_dish表，执行insert操作
+        setMealDishService.saveBatch(setMealDishes);
     }
 }

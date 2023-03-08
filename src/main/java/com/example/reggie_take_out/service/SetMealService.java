@@ -24,4 +24,16 @@ public interface SetMealService extends IService<SetMeal> {
      * @param ids
      */
     public void removeSetMealDish(List<Long> ids);
+
+    /**
+     * 根据id获取套餐及套餐和菜品的关联关系
+     * @param id
+     */
+    public SetMealDto getSetMealDishById(Long id);
+
+    /**
+     * 更新套餐及套菜和菜品的关联关系
+     * @param setMealDto
+     */
+    public void updateSetMealDish(SetMealDto setMealDto);
 }

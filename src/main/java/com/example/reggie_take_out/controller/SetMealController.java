@@ -169,4 +169,31 @@ public class SetMealController {
 
         return Result.success("修改成功！");
     }
+
+    /**
+     * 修改套餐
+     *
+     * @param setMealDto
+     * @return
+     */
+    @PutMapping
+    public Result<String> updateDish(@RequestBody SetMealDto setMealDto) {
+
+        setMealService.updateSetMealDish(setMealDto);
+
+        return Result.success("修改套餐成功");
+    }
+
+    /**
+     * 根据id查询套餐信息和套餐和菜品的关联信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<SetMealDto> getDishById(@PathVariable Long id) {
+        SetMealDto setMealDishById = setMealService.getSetMealDishById(id);
+        return Result.success(setMealDishById);
+    }
 }
+

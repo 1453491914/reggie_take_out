@@ -40,6 +40,7 @@ public class OrdersController {
 
     /**
      * 用户下单
+     *
      * @param orders
      * @return
      */
@@ -52,6 +53,7 @@ public class OrdersController {
 
     /**
      * 后台管理系统查看所有订单
+     *
      * @param page
      * @param pageSize
      * @param number
@@ -60,19 +62,19 @@ public class OrdersController {
      * @return
      */
     @GetMapping("/page")
-    public Result<Page> getOrderPage(int page, int pageSize, Long number, String beginTime,String endTime) {
-        log.info("page : {} pageSize : {} number : {} beginTime : {} endTime : {}", page, pageSize, number,beginTime,endTime);
+    public Result<Page> getOrderPage(int page, int pageSize, Long number, String beginTime, String endTime) {
+        log.info("page : {} pageSize : {} number : {} beginTime : {} endTime : {}", page, pageSize, number, beginTime, endTime);
 
         Page<Orders> ordersPage = new Page<>(page, pageSize);
 
         LambdaQueryWrapper<Orders> ordersLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
-        ordersLambdaQueryWrapper.like(number != null,Orders::getId,number);
+        ordersLambdaQueryWrapper.like(number != null, Orders::getId, number);
 
         if (beginTime != null && endTime != null) {
             LocalDateTime selectBeginTime = LocalDateTime.parse(beginTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             LocalDateTime selectEndTime = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            ordersLambdaQueryWrapper.between(Orders::getOrderTime,selectBeginTime,selectEndTime);
+            ordersLambdaQueryWrapper.between(Orders::getOrderTime, selectBeginTime, selectEndTime);
         }
 
         ordersLambdaQueryWrapper.orderByDesc(Orders::getOrderTime);
@@ -84,12 +86,13 @@ public class OrdersController {
 
     /**
      * 用户移动端查看订单
+     *
      * @param page
      * @param pageSize
      * @return
      */
     @GetMapping("/userPage")
-    public Result<Page> getUserOrders (int page, int pageSize) {
+    public Result<Page> getUserOrders(int page, int pageSize) {
         Page<Orders> ordersPage = new Page<>(page, pageSize);
 
         LambdaQueryWrapper<Orders> ordersLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -107,8 +110,7 @@ public class OrdersController {
 
         List<Orders> ordersPageRecords = ordersPage.getRecords();
 
-
-        List<OrdersDto> ordersDtoPageRecords= ordersPageRecords.stream().map((item) -> {
+        List<OrdersDto> ordersDtoPageRecords = ordersPageRecords.stream().map((item) -> {
             OrdersDto ordersDto = new OrdersDto();
             BeanUtils.copyProperties(item, ordersDto);
 
@@ -129,11 +131,12 @@ public class OrdersController {
 
     /**
      * 后台修改订单状态
+     *
      * @param orders
      * @return
      */
     @PutMapping
-    public Result<String> updateOrdersStatus (@RequestBody Orders orders) {
+    public Result<String> updateOrdersStatus(@RequestBody Orders orders) {
         log.info("status : {}  id : {}", orders.getStatus(), orders.getId());
 
         Orders ordersServiceById = ordersService.getById(orders.getId());
